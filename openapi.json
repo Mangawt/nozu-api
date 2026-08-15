@@ -1,0 +1,1231 @@
+{
+  "public_url": "https://nozu.me",
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Nozu Public API",
+    "version": "1.1.0",
+    "description": "Nozu anime, manga, karakter, kişi, stüdyo ve public kullanıc verilerini sunan ücretsiz REST API.",
+    "contact": {
+      "name": "Nozu",
+      "email": "nozudestek@naver.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://nozu.me/api/v1",
+      "description": "Nozu API v1"
+    }
+  ],
+  "security": [],
+  "tags": [
+    {
+      "name": "Arama ve Keşif",
+      "description": "Anime ve manga arama, trend, popüler ve keşif endpointleri."
+    },
+    {
+      "name": "Anime ve Manga",
+      "description": "Anime/manga detayları ve çoklu medya sorguları."
+    },
+    {
+      "name": "Katalog",
+      "description": "Karakter, kişi, stüdyo ve etiket verileri."
+    },
+    {
+      "name": "Public Profiller",
+      "description": "Nozu kullanıcılarının herkese açık profil ve liste verileri."
+    },
+    {
+      "name": "Sistem",
+      "description": "API tanımı ve sistem yardımcıları."
+    }
+  ],
+  "components": {
+    "parameters": {
+      "Page": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "description": "Sayfa numarası."
+      },
+      "PerPage": {
+        "name": "per_page",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 24
+        },
+        "description": "Sayfa başına kayıt."
+      },
+      "Type": {
+        "name": "type",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "anime",
+            "manga"
+          ]
+        },
+        "description": "Medya türü."
+      },
+      "Fields": {
+        "name": "fields",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Virgülle ayrılmış response alanları."
+      },
+      "Include": {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "characters, relations, recommendations, staff, external_links, streaming_episodes, tags, rankings, stats."
+      },
+      "Slug": {
+        "name": "slug",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Nozu slug değeri."
+      },
+      "Username": {
+        "name": "username",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Nozu kullanıcı adı."
+      }
+    },
+    "headers": {
+      "XRateLimitLimit": {
+        "description": "İstek penceresindeki maksimum istek sayısı.",
+        "schema": {
+          "type": "integer",
+          "example": 60
+        }
+      },
+      "XRateLimitRemaining": {
+        "description": "Mevcut pencere içinde kalan istek sayısı.",
+        "schema": {
+          "type": "integer",
+          "example": 59
+        }
+      },
+      "RetryAfter": {
+        "description": "429 sonrasında yeniden denemeden önce beklenecek saniye.",
+        "schema": {
+          "type": "integer",
+          "example": 37
+        }
+      }
+    },
+    "schemas": {
+      "StandardSuccess": {
+        "type": "object",
+        "required": [
+          "success",
+          "data"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "nullable": true
+          },
+          "meta": {
+            "type": "object",
+            "nullable": true
+          },
+          "links": {
+            "type": "object",
+            "nullable": true
+          }
+        }
+      },
+      "StandardError": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "errors"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Kayıt bulunamadı."
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "current_page": {
+            "type": "integer",
+            "example": 1
+          },
+          "per_page": {
+            "type": "integer",
+            "example": 24
+          },
+          "total": {
+            "type": "integer",
+            "example": 120
+          },
+          "last_page": {
+            "type": "integer",
+            "example": 5
+          },
+          "from": {
+            "type": "integer",
+            "nullable": true,
+            "example": 1
+          },
+          "to": {
+            "type": "integer",
+            "nullable": true,
+            "example": 24
+          }
+        }
+      },
+      "PaginationLinks": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "string",
+            "nullable": true
+          },
+          "last": {
+            "type": "string",
+            "nullable": true
+          },
+          "prev": {
+            "type": "string",
+            "nullable": true
+          },
+          "next": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MediaSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "anime",
+              "manga"
+            ]
+          },
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "cover_image": {
+            "type": "string",
+            "nullable": true
+          },
+          "banner_image": {
+            "type": "string",
+            "nullable": true
+          },
+          "format": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "average_score": {
+            "type": "number",
+            "nullable": true
+          },
+          "popularity": {
+            "type": "integer",
+            "nullable": true
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PublicUser": {
+        "type": "object",
+        "description": "Nozu kullanıcısının yalnızca herkese açık profil verileri.",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "banner": {
+            "type": "string",
+            "nullable": true
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true
+          },
+          "followers_count": {
+            "type": "integer"
+          },
+          "following_count": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "Kayıt bulunamadı.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StandardError"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Parametreler geçersiz.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StandardError"
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Rate limit aşıldı.",
+        "headers": {
+          "X-RateLimit-Limit": {
+            "$ref": "#/components/headers/XRateLimitLimit"
+          },
+          "X-RateLimit-Remaining": {
+            "$ref": "#/components/headers/XRateLimitRemaining"
+          },
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StandardError"
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/search": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Anime ve manga arama",
+        "description": "Filtrelenebilir ve sayfalı anime/manga katalog araması.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "$ref": "#/components/parameters/Type"
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1900,
+              "maximum": 2100
+            }
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "studio",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "adult",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "minimum_score",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "maximum_score",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PerPage"
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Include"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başarılı sonuç."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/discover": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Keşif blokları",
+        "responses": {
+          "200": {
+            "description": "Keşif verileri."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/discover/genre": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Tür bazlı keşif",
+        "responses": {
+          "200": {
+            "description": "Dinamik tür keşif sonuçları."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/trending": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Trend içerikler",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Type"
+          },
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PerPage"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trend medya listesi."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/popular": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Popüler içerikler",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Type"
+          },
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PerPage"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Popüler medya listesi."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/season-popular": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Güncel sezonun popüler animeleri",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PerPage"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sezon listesi."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/latest": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Son eklenen içerikler",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Type"
+          },
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PerPage"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Son eklenen medya listesi."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/random": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Rastgele medya",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Type"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rastgele anime veya manga."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/autocomplete": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Başlık otomatik tamamlama",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Otomatik tamamlama sonuçları."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/autocomplete/grouped": {
+      "get": {
+        "tags": [
+          "Arama ve Keşif"
+        ],
+        "summary": "Gruplandırılmış otomatik tamamlama",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Anime, manga ve karakter grupları."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/anime/{slug}": {
+      "get": {
+        "tags": [
+          "Anime ve Manga"
+        ],
+        "summary": "Anime detayı",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Slug"
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Include"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Anime detayı."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/manga/{slug}": {
+      "get": {
+        "tags": [
+          "Anime ve Manga"
+        ],
+        "summary": "Manga detayı",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Slug"
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Include"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Manga detayı."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/media": {
+      "get": {
+        "tags": [
+          "Anime ve Manga"
+        ],
+        "summary": "Çoklu medya sorgusu",
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "20,30,41"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eşleşen medya kayıtları."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/media/batch": {
+      "post": {
+        "tags": [
+          "Anime ve Manga"
+        ],
+        "summary": "JSON body ile çoklu medya",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "ids"
+                ],
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Eşleşen medya kayıtları."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/recommendations/{slug}": {
+      "get": {
+        "tags": [
+          "Anime ve Manga"
+        ],
+        "summary": "Benzer öneriler",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Slug"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Önerilen medya kayıtları."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/studios": {
+      "get": {
+        "tags": [
+          "Katalog"
+        ],
+        "summary": "Stüdyo listesi",
+        "responses": {
+          "200": {
+            "description": "Stüdyo listesi."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/studios/{slug}": {
+      "get": {
+        "tags": [
+          "Katalog"
+        ],
+        "summary": "Stüdyo detayı",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Slug"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stüdyo detayı."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/people": {
+      "get": {
+        "tags": [
+          "Katalog"
+        ],
+        "summary": "Kişi listesi",
+        "responses": {
+          "200": {
+            "description": "Kişi listesi."
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/people/{slug}": {
+      "get": {
+        "tags": [
+          "Katalog"
+        ],
+        "summary": "Kişi detayı",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Slug"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kişi detayı."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/characters/{slug}": {
+      "get": {
+        "tags": [
+          "Katalog"
+        ],
+        "summary": "Karakter detayı",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Slug"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Karakter detayı."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/tags/{slug}": {
+      "get": {
+        "tags": [
+          "Katalog"
+        ],
+        "summary": "Etiket detayı",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Slug"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Etiket verisi."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/users/{username}": {
+      "get": {
+        "tags": [
+          "Public Profiller"
+        ],
+        "summary": "Public kullanıcı profili",
+        "description": "Yalnızca kullanıcının herkese açık Nozu profil verilerini döndürür.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public profil bilgileri."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/users/{username}/anime-list": {
+      "get": {
+        "tags": [
+          "Public Profiller"
+        ],
+        "summary": "Public anime listesi",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kullanıcının public anime listesi."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/users/{username}/manga-list": {
+      "get": {
+        "tags": [
+          "Public Profiller"
+        ],
+        "summary": "Public manga listesi",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kullanıcının public manga listesi."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/users/{username}/favorites": {
+      "get": {
+        "tags": [
+          "Public Profiller"
+        ],
+        "summary": "Public favoriler",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kullanıcının public favorileri."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/users/{username}/comments": {
+      "get": {
+        "tags": [
+          "Public Profiller"
+        ],
+        "summary": "Public yorumlar",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kullanıcının public yorumları."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/users/{username}/custom-lists": {
+      "get": {
+        "tags": [
+          "Public Profiller"
+        ],
+        "summary": "Public özel listeler",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kullanıcının herkese açık özel listeleri."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/users/{username}/custom-lists/{slug}": {
+      "get": {
+        "tags": [
+          "Public Profiller"
+        ],
+        "summary": "Public özel liste detayı",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Username"
+          },
+          {
+            "$ref": "#/components/parameters/Slug"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public özel liste detayı."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/users/{username}/followers": {
+      "get": {
+        "tags": [
+          "Public Profiller"
+        ],
+        "summary": "Public takipçiler",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kullanıcının takipçileri."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/users/{username}/following": {
+      "get": {
+        "tags": [
+          "Public Profiller"
+        ],
+        "summary": "Public takip edilenler",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kullanıcının takip ettiği public hesaplar."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    }
+  }
+}
