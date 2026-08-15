@@ -1,4 +1,5 @@
-<img width="763" height="276" alt="image" src="https://github.com/user-attachments/assets/ded8f893-7297-4cbf-ad0a-8ce42d034107" />
+<img width="763" height="276" alt="sye" src="https://github.com/user-attachments/assets/0c527467-2dae-439d-adf1-dd2581cab570" />
+
 
 
 # Nozu API
