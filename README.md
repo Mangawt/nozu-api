@@ -116,8 +116,3 @@ Nozu is a Turkish anime and manga database designed to help users discover anime
 
 - [English](README.md)
 - [Türkçe](README_TR.md)
-
-
-# README_TR.md
-
-# Nozu API
