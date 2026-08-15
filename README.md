@@ -35,3 +35,12 @@ Nozu API provides anime, manga, character, staff, voice actor, studio, relation 
 
 ```http
 GET https://nozu.me/api/v1/search?type=anime&q=naruto
+
+Latest
+GET https://nozu.me/api/v1/latest
+
+Trending
+GET https://nozu.me/api/v1/trending
+
+Popular
+GET https://nozu.me/api/v1/popular
