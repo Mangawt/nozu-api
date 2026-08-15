@@ -1,13 +1,16 @@
 # Nozu API
 
+**English** | [Türkçe](README_TR.md)
+
 Free Anime & Manga REST API.
 
-Nozu API provides anime, manga, character, staff, studio and related media
-data through a simple REST API.
+Nozu API provides anime, manga, character, staff, voice actor, studio, relation and recommendation data through a simple REST API.
 
-🌐 Website: https://nozu.me  
-📚 API Documentation: https://nozu.me/api  
-🔗 Base URL: https://nozu.me/api/v1
+🌐 **Website:** https://nozu.me  
+📚 **API Documentation:** https://nozu.me/api  
+🔗 **Base URL:** `https://nozu.me/api/v1`
+
+---
 
 ## Features
 
@@ -21,7 +24,10 @@ data through a simple REST API.
 - Trending anime and manga
 - Popular anime and manga
 - Advanced search
-- No API key required
+- JSON responses
+- No API key required for public endpoints
+
+---
 
 ## Quick Start
 
