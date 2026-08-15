@@ -1,16 +1,15 @@
-# README_TR.md
-
 # Nozu API
 
 [English](README.md) | **Türkçe**
 
 Ücretsiz Anime ve Manga REST API'si.
 
-Nozu API; anime, manga, karakter, ekip, seslendirme sanatçısı, stüdyo, ilişkiler ve öneriler gibi verileri basit bir REST API üzerinden sunar.
+Nozu API; anime, manga, karakter, ekip, seslendirme sanatçısı, stüdyo, ilişkiler, öneriler ve herkese açık kullanıcı verilerini basit bir REST API üzerinden sunar.
 
 🌐 **Web Sitesi:** https://nozu.me  
 📚 **API Dokümantasyonu:** https://nozu.me/api  
-🔗 **Temel API Adresi:** `https://nozu.me/api/v1`
+🔗 **Temel API Adresi:** `https://nozu.me/api/v1`  
+📄 **OpenAPI:** [openapi.json](openapi.json)
 
 ---
 
@@ -25,8 +24,13 @@ Nozu API; anime, manga, karakter, ekip, seslendirme sanatçısı, stüdyo, iliş
 - Öneriler
 - Trend anime ve mangalar
 - Popüler anime ve mangalar
-- Gelişmiş arama
+- Güncel sezon verileri
+- Gelişmiş arama ve filtreleme
+- Otomatik tamamlama
+- Rastgele anime veya manga
+- Herkese açık kullanıcı profilleri ve listeleri
 - JSON yanıtları
+- OpenAPI tanımı
 - Public endpointler için API anahtarı gerekmez
 
 ---
@@ -57,15 +61,56 @@ GET https://nozu.me/api/v1/trending
 GET https://nozu.me/api/v1/popular
 ```
 
+### Güncel Sezon
+
+```http
+GET https://nozu.me/api/v1/season-popular
+```
+
+### Rastgele
+
+```http
+GET https://nozu.me/api/v1/random
+```
+
+---
+
+## Temel Endpointler
+
+| Endpoint | Açıklama |
+|---|---|
+| `GET /search` | Anime ve manga arama |
+| `GET /discover` | Anime ve manga keşfetme |
+| `GET /trending` | Trend içerikleri getirir |
+| `GET /popular` | Popüler içerikleri getirir |
+| `GET /season-popular` | Güncel sezonun popüler yapımlarını getirir |
+| `GET /latest` | Son eklenen içerikleri getirir |
+| `GET /random` | Rastgele içerik getirir |
+| `GET /autocomplete` | Arama otomatik tamamlama |
+| `GET /anime/{slug}` | Anime detaylarını getirir |
+| `GET /manga/{slug}` | Manga detaylarını getirir |
+| `GET /recommendations/{slug}` | Önerileri getirir |
+| `GET /studios` | Stüdyoları listeler |
+| `GET /studios/{slug}` | Stüdyo detaylarını getirir |
+| `GET /people` | Kişileri listeler |
+| `GET /people/{slug}` | Kişi detaylarını getirir |
+| `GET /characters/{slug}` | Karakter detaylarını getirir |
+| `GET /users/{username}` | Herkese açık kullanıcı profilini getirir |
+
+Tüm endpointler, parametreler ve veri şemaları için resmî dokümantasyona veya OpenAPI dosyasına bakabilirsin.
+
 ---
 
 ## JavaScript Örneği
 
 ```javascript
-fetch('https://nozu.me/api/v1/search?type=anime&q=naruto')
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error(error));
+const response = await fetch(
+    'https://nozu.me/api/v1/search?type=anime&q=naruto'
+);
+
+const data = await response.json();
+
+console.log(data);
 ```
 
 ---
@@ -90,15 +135,52 @@ fetch('https://nozu.me/api/v1/search?type=anime&q=naruto')
 
 ---
 
+## Örnekler
+
+Detaylı kullanım örnekleri:
+
+- [JavaScript](examples/javascript.md)
+- [Python](examples/python.md)
+- [PHP](examples/php.md)
+- [Flutter / Dart](examples/flutter.md)
+
+---
+
+## OpenAPI
+
+OpenAPI tanımı bu repoda bulunmaktadır:
+
+[openapi.json](openapi.json)
+
+Canlı OpenAPI çıktısı:
+
+https://nozu.me/api/v1/openapi.json
+
+---
+
 ## Kimlik Doğrulama
 
 Nozu API'nin public endpointleri için API anahtarı gerekmez.
 
 ---
 
+## İstek Limiti
+
+Public API şu anda:
+
+```text
+IP başına dakikada 60 istek
+```
+
+uygulanmasını destekler.
+
+Uygulamaların mümkün olduğu durumlarda yanıtları önbelleğe alması ve gereksiz tekrar eden isteklerden kaçınması önerilir.
+
+---
+
 ## Dokümantasyon
 
-Tüm endpointler, parametreler ve kullanım örnekleri için:
+Tüm API dokümantasyonu:
 
 https://nozu.me/api
 
@@ -106,7 +188,9 @@ https://nozu.me/api
 
 ## Nozu Hakkında
 
-Nozu; kullanıcıların anime, manga, karakter, seslendirme sanatçıları, stüdyolar ve ilişkili içerikleri keşfetmesini sağlayan Türkçe bir anime ve manga veritabanıdır.
+Nozu; anime, manga, karakter, seslendirme sanatçıları, stüdyolar ve ilişkili içeriklerin keşfedilebildiği Türkçe bir anime ve manga veritabanıdır.
+
+Nozu ayrıca geliştiricilerin anime ve manga verilerini web sitelerine, mobil uygulamalara, botlara ve diğer projelere entegre edebilmesi için herkese açık bir REST API sunar.
 
 🌐 https://nozu.me
 
