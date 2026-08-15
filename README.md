@@ -44,3 +44,44 @@ GET https://nozu.me/api/v1/trending
 
 Popular
 GET https://nozu.me/api/v1/popular
+
+JavaScript Example
+fetch('https://nozu.me/api/v1/search?type=anime&q=naruto')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+
+Response Format
+{
+  "success": true,
+  "data": [],
+  "meta": {
+    "current_page": 1,
+    "per_page": 24,
+    "total": 120,
+    "last_page": 5
+  },
+  "links": {
+    "next": "..."
+  }
+}
+
+Authentication
+
+Public Nozu API endpoints do not require an API key.
+
+Documentation
+
+For complete endpoint documentation, parameters and examples:
+
+https://nozu.me/api
+
+About Nozu
+
+Nozu is a Turkish anime and manga database designed to help users discover anime, manga, characters, voice actors, studios and related content.
+
+🌐 https://nozu.me
+
+Languages
+English
+Türkçe
