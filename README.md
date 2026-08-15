@@ -1,3 +1,6 @@
+<img width="763" height="276" alt="image" src="https://github.com/user-attachments/assets/ded8f893-7297-4cbf-ad0a-8ce42d034107" />
+
+
 # Nozu API
 
 **English** | [Türkçe](README_TR.md)
